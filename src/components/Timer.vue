@@ -1,7 +1,7 @@
  <template>
-   <div class="text-center">
+   <div class="text-center mt-[50px]">
      <div class="relative inline-block">
-       <svg width="100%" height="100%" viewBox="0 0 160 160" class="timer-circle w-full md:w-[500px] md:h-[500px] aspect-square mx-auto">
+        <svg width="100%" height="100%" viewBox="0 0 160 160" class="timer-circle w-full md:w-[500px] md:h-[500px] aspect-square mx-auto mt-[50px]">
         <circle
           cx="80"
           cy="80"

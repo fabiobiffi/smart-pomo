@@ -1,6 +1,6 @@
 <template>
    <div class="min-h-screen text-white flex flex-col">
-     <div class="flex flex-col items-center min-h-screen" style="background-image: url(/wallpaper.png); background-repeat: no-repeat; background-size: cover;">
+      <div class="flex flex-col items-center min-h-screen" style="background-image: url(/wallpaper.png); background-repeat: no-repeat; background-size: cover;">
        <Timer />
        <TodoList class="mt-8 w-full max-w-md" />
      </div>
