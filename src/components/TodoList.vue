@@ -38,10 +38,7 @@
 <script setup>
 import { ref } from 'vue'
 
-const todos = ref([
-  { text: 'Focus on work', completed: false },
-  { text: 'Take a break', completed: true },
-])
+const todos = ref([])
 
 const newTodo = ref('')
 
