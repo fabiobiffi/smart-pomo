@@ -29,6 +29,8 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
+        env:
+          VITE_BASE_PATH: /smart-pomo/
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
