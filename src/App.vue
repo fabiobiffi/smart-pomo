@@ -1,8 +1,11 @@
 <template>
    <div class="min-h-screen text-white flex flex-col">
-       <div class="flex flex-col items-center min-h-screen" style="background-image: url(/wallpaper.png); background-repeat: no-repeat; background-size: cover;">
-        <Timer />
-        <TodoList class="mt-8 w-full max-w-md" />
+       <div class="relative flex flex-col items-center min-h-screen" style="background-image: url(/wallpaper.png); background-repeat: no-repeat; background-size: cover;">
+        <div class="absolute inset-0 bg-black bg-opacity-30 pointer-events-none z-10"></div>
+        <div class="relative z-20">
+          <Timer />
+          <TodoList class="mt-8 w-full max-w-md" />
+        </div>
       </div>
      <section class="mt-12 flex-1 flex flex-col justify-center items-center">
        <div class="w-full max-w-4xl text-center">
