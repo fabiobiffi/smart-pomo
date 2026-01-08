@@ -108,4 +108,3 @@ This project is open source and available under the [MIT License](LICENSE).
 ---
 
 Made with ❤️ for productivity enthusiasts</content>
-<parameter name="filePath">/home/fabio/Scrivania/workspace/smart-pomo/README.md
