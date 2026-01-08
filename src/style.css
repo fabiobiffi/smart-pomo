@@ -5,7 +5,7 @@
 /* Custom styles for futuristic theme */
 body {
   font-family: 'Press Start 2P', monospace;
-   background-image: url('/wallpaper.png');
+  background-color: #11216f;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

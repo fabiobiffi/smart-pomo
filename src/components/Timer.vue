@@ -1,7 +1,7 @@
-<template>
-  <div class="text-center">
-    <div class="relative inline-block">
-      <svg width="500" height="500" viewBox="0 0 160 160" class="timer-circle">
+ <template>
+   <div class="text-center">
+     <div class="relative inline-block">
+       <svg width="100%" height="100%" viewBox="0 0 160 160" class="timer-circle w-full md:w-[500px] md:h-[500px] aspect-square mx-auto">
         <circle
           cx="80"
           cy="80"
@@ -23,11 +23,11 @@
           class="timer-border"
         />
       </svg>
-      <div class="absolute inset-0 flex items-center justify-center">
-        <div class="text-8xl md:text-9xl font-mono select-none">
-          {{ formattedTime }}
-        </div>
-      </div>
+       <div class="absolute inset-0 flex items-center justify-center">
+         <div class="text-[4rem] sm:text-8xl md:text-9xl font-mono select-none">
+           {{ formattedTime }}
+         </div>
+       </div>
     </div>
     <div class="mt-4 flex justify-center space-x-4">
       <button
