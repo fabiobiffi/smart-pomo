@@ -1,5 +1,5 @@
-# Build stage
-FROM node:18-alpine AS build
+# Development stage
+FROM node:18-alpine
 
 WORKDIR /app
 
@@ -12,17 +12,8 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Build the app
-RUN npm run build
+# Expose Vite dev server port
+EXPOSE 5173
 
-# Production stage
-FROM nginx:alpine
-
-# Copy built app from build stage
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Expose port
-EXPOSE 80
-
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start dev server
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h2 class="text-2xl font-bold mb-4 glow">Todo List</h2>
+    <h2 class="text-xl font-bold mb-4 glow">Todo List</h2>
     <div class="space-y-2">
-      <div v-for="(todo, index) in todos" :key="index" class="flex items-center space-x-2 p-3 bg-gray-800 rounded-lg shadow-lg">
+      <div v-for="(todo, index) in todos" :key="index" class="flex items-center space-x-2 p-2 bg-gray-800 rounded-lg shadow-lg">
         <input
           type="checkbox"
           :checked="todo.completed"
@@ -29,7 +29,7 @@
         v-model="newTodo"
         @keyup.enter="addTodo"
         placeholder="Add new todo..."
-        class="w-full p-3 bg-gray-800 rounded-lg shadow-lg border-none outline-none text-white placeholder-gray-400"
+        class="w-full p-2 bg-gray-800 rounded-lg shadow-lg border-none outline-none text-white placeholder-gray-400"
       />
     </div>
   </div>

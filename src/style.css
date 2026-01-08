@@ -4,7 +4,11 @@
 
 /* Custom styles for futuristic theme */
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Press Start 2P', monospace;
+  background-image: url('https://wallpapercave.com/wp/wp11258908.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* Glow effects */

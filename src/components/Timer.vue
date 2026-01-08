@@ -1,31 +1,30 @@
 <template>
   <div class="text-center">
     <div class="relative inline-block">
-      <svg width="300" height="300" viewBox="0 0 120 120" class="timer-circle">
+      <svg width="500" height="500" viewBox="0 0 160 160" class="timer-circle">
         <circle
-          cx="60"
-          cy="60"
-          r="50"
+          cx="80"
+          cy="80"
+          r="70"
           fill="none"
           stroke="#e5e7eb"
-          stroke-width="4"
+          stroke-width="8"
         />
         <circle
-          cx="60"
-          cy="60"
-          r="50"
+          cx="80"
+          cy="80"
+          r="70"
           fill="none"
           :stroke="borderColor"
-          stroke-width="4"
+          stroke-width="8"
           :stroke-dasharray="`${progress * circumference} ${circumference}`"
           stroke-linecap="round"
-          transform="rotate(-90 60 60)"
+          transform="rotate(-90 80 80)"
           class="timer-border"
-          :style="{ filter: `drop-shadow(0 0 10px ${borderColor})` }"
         />
       </svg>
       <div class="absolute inset-0 flex items-center justify-center">
-        <div class="text-6xl md:text-7xl font-mono select-none">
+        <div class="text-8xl md:text-9xl font-mono select-none">
           {{ formattedTime }}
         </div>
       </div>
@@ -33,21 +32,22 @@
     <div class="mt-4 flex justify-center space-x-4">
       <button
         @click="startTimer"
-        class="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg glow transition-all duration-300"
+        class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg glow transition-all duration-300 text-sm"
         :disabled="isRunning"
       >
         Start
       </button>
       <button
         @click="pauseTimer"
-        class="px-6 py-3 bg-yellow-600 hover:bg-yellow-500 rounded-lg glow transition-all duration-300"
+        class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 rounded-lg glow transition-all duration-300 text-sm"
         :disabled="!isRunning"
       >
         Pause
       </button>
       <button
         @click="resetTimer"
-        class="px-6 py-3 bg-red-600 hover:bg-red-500 rounded-lg glow transition-all duration-300"
+        class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg glow transition-all duration-300 text-sm"
+        :disabled="!isRunning"
       >
         Reset
       </button>
@@ -71,7 +71,7 @@ const formattedTime = computed(() => {
 
 const progress = computed(() => remainingTime.value / totalTime.value)
 
-const circumference = 2 * Math.PI * 50
+const circumference = 2 * Math.PI * 70
 
 const borderColor = computed(() => {
   if (progress.value > 0.5) return '#10b981' // green
@@ -141,4 +141,4 @@ onMounted(() => {
 .timer-border {
   transition: stroke 0.3s ease, filter 0.3s ease;
 }
-</script>
+</style>
