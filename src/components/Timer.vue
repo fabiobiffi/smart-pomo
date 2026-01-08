@@ -45,7 +45,17 @@
           </svg>
         </div>
     </div>
-     <div class="mt-4 flex justify-center space-x-4">
+    </div>
+     <div class="mt-4 flex flex-col items-center space-y-4">
+      <div class="flex space-x-4">
+        <label class="text-white">
+          Work: <input v-model.number="workMinutes" type="number" min="1" max="60" class="w-16 p-1 bg-gray-800 text-white rounded" /> min
+        </label>
+        <label class="text-white">
+          Break: <input v-model.number="breakMinutes" type="number" min="1" max="30" class="w-16 p-1 bg-gray-800 text-white rounded" /> min
+        </label>
+      </div>
+      <div class="flex justify-center space-x-4">
        <button
          @click="startTimer"
          class="px-4 py-2 bg-red-500 hover:bg-red-600 border-4 border-yellow-400 rounded-none shadow-lg transform hover:scale-105 transition-all duration-300 text-sm font-bold"
@@ -71,11 +81,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 
-const totalTime = ref(25 * 60) // 25 minutes in seconds
+const workMinutes = ref(25)
+const breakMinutes = ref(5)
+const totalTime = ref(workMinutes.value * 60) // in seconds
 const remainingTime = ref(totalTime.value)
 const isRunning = ref(false)
+const isBreak = ref(false)
 const intervalId = ref(null)
 
 const formattedTime = computed(() => {
@@ -89,6 +102,7 @@ const progress = computed(() => remainingTime.value / totalTime.value)
 const circumference = 2 * Math.PI * 70
 
 const borderColor = computed(() => {
+  if (isBreak.value) return '#06b6d4' // cyan during break
   if (!isRunning.value) return '#f59e0b' // yellow when paused
   if (progress.value > 0.5) return '#10b981' // green
   if (progress.value > 0.2) return '#f59e0b' // yellow
@@ -103,7 +117,15 @@ const startTimer = () => {
         remainingTime.value--
       } else {
         playAlarm()
-        resetTimer()
+        if (!isBreak.value) {
+          // Start break
+          isBreak.value = true
+          remainingTime.value = breakMinutes.value * 60
+          totalTime.value = breakMinutes.value * 60
+        } else {
+          // End break, reset to work
+          resetTimer()
+        }
       }
     }, 1000)
   }
@@ -119,6 +141,8 @@ const pauseTimer = () => {
 const resetTimer = () => {
   clearInterval(intervalId.value)
   isRunning.value = false
+  isBreak.value = false
+  totalTime.value = workMinutes.value * 60 // reset to work time
   remainingTime.value = totalTime.value
 }
 
@@ -156,6 +180,21 @@ const playAlarm = () => {
   oscillator.start(audioContext.currentTime)
   oscillator.stop(audioContext.currentTime + 1)
 }
+
+// Watchers to update times when inputs change
+watch(workMinutes, (newVal) => {
+  if (!isRunning.value && !isBreak.value) {
+    totalTime.value = newVal * 60
+    remainingTime.value = totalTime.value
+  }
+})
+
+watch(breakMinutes, (newVal) => {
+  if (isBreak.value && !isRunning.value) {
+    totalTime.value = newVal * 60
+    remainingTime.value = totalTime.value
+  }
+})
 
 
 </script>
