@@ -32,24 +32,23 @@
     <div class="mt-4 flex justify-center space-x-4">
       <button
         @click="startTimer"
-        class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg glow transition-all duration-300 text-sm"
+        class="px-4 py-2 bg-red-500 hover:bg-red-600 border-4 border-yellow-400 rounded-none shadow-lg transform hover:scale-105 transition-all duration-300 text-sm font-bold"
         :disabled="isRunning"
       >
-        Start
+        START
       </button>
       <button
         @click="pauseTimer"
-        class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 rounded-lg glow transition-all duration-300 text-sm"
+        class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 border-4 border-orange-400 rounded-none shadow-lg transform hover:scale-105 transition-all duration-300 text-sm font-bold"
         :disabled="!isRunning"
       >
-        Pause
+        PAUSE
       </button>
       <button
         @click="resetTimer"
-        class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg glow transition-all duration-300 text-sm"
-        :disabled="!isRunning"
+        class="px-4 py-2 bg-blue-500 hover:bg-blue-600 border-4 border-cyan-400 rounded-none shadow-lg transform hover:scale-105 transition-all duration-300 text-sm font-bold"
       >
-        Reset
+        RESET
       </button>
     </div>
   </div>
@@ -106,6 +105,24 @@ const resetTimer = () => {
   remainingTime.value = totalTime.value
 }
 
+const playClick = () => {
+  // Simple click sound using Web Audio API
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+  const oscillator = audioContext.createOscillator()
+  const gainNode = audioContext.createGain()
+
+  oscillator.connect(gainNode)
+  gainNode.connect(audioContext.destination)
+
+  oscillator.frequency.value = 600
+  oscillator.type = 'square'
+  gainNode.gain.setValueAtTime(0.2, audioContext.currentTime)
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1)
+
+  oscillator.start(audioContext.currentTime)
+  oscillator.stop(audioContext.currentTime + 0.1)
+}
+
 const playAlarm = () => {
   // Simple beep sound using Web Audio API
   const audioContext = new (window.AudioContext || window.webkitAudioContext)()
@@ -123,14 +140,7 @@ const playAlarm = () => {
   oscillator.stop(audioContext.currentTime + 1)
 }
 
-onMounted(() => {
-  // Ensure audio context is resumed on user interaction
-  document.addEventListener('click', () => {
-    if (audioContext && audioContext.state === 'suspended') {
-      audioContext.resume()
-    }
-  })
-})
+
 </script>
 
 <style scoped>
