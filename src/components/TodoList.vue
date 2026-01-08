@@ -24,14 +24,19 @@
          </button>
        </div>
     </div>
-     <div class="mt-4">
+     <div class="mt-4 flex space-x-2 mb-[100px]">
        <textarea
          v-model="newTodo"
-         @keyup.enter="addTodo"
          placeholder="Add new todo..."
-         class="w-full p-2 bg-gray-800 rounded-lg shadow-lg border-none outline-none text-white text-lg placeholder-gray-400 resize-none overflow-hidden"
+         class="flex-1 p-2 bg-gray-800 rounded-lg shadow-lg border-none outline-none text-white text-lg placeholder-gray-400 resize-none overflow-hidden"
          rows="1"
        ></textarea>
+       <button
+         @click="addTodo"
+         class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg shadow-lg text-lg font-bold"
+       >
+         +
+       </button>
      </div>
   </div>
 </template>

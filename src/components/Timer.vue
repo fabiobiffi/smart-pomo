@@ -48,11 +48,11 @@
     </div>
      <div class="mt-4 flex flex-col items-center space-y-4">
       <div class="flex space-x-4">
-        <label class="text-white">
-          Work: <input v-model.number="workMinutes" type="number" min="1" max="60" class="w-16 p-1 bg-gray-800 text-white rounded" /> min
+        <label class="text-white text-xs">
+          Work: <input v-model.number="workMinutes" type="number" min="1" max="60" class="w-16 p-1 bg-gray-800 text-white text-xs rounded" /> min
         </label>
-        <label class="text-white">
-          Break: <input v-model.number="breakMinutes" type="number" min="1" max="30" class="w-16 p-1 bg-gray-800 text-white rounded" /> min
+        <label class="text-white text-xs">
+          Break: <input v-model.number="breakMinutes" type="number" min="1" max="30" class="w-16 p-1 bg-gray-800 text-white text-xs rounded" /> min
         </label>
       </div>
       <div class="flex justify-center space-x-4">
@@ -81,7 +81,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 
 const workMinutes = ref(parseInt(localStorage.getItem('workMinutes') || '25'))
 const breakMinutes = ref(parseInt(localStorage.getItem('breakMinutes') || '5'))
@@ -112,6 +112,11 @@ const borderColor = computed(() => {
 const startTimer = () => {
   if (!isRunning.value) {
     isRunning.value = true
+    if (!isBreak.value) {
+      showNotification('Work time started!')
+    } else {
+      showNotification('Break time started!')
+    }
     intervalId.value = setInterval(() => {
       if (remainingTime.value > 0) {
         remainingTime.value--
@@ -119,11 +124,13 @@ const startTimer = () => {
         playAlarm()
         if (!isBreak.value) {
           // Start break
+          showNotification('Time for a break!')
           isBreak.value = true
           remainingTime.value = breakMinutes.value * 60
           totalTime.value = breakMinutes.value * 60
         } else {
           // End break, reset to work
+          showNotification('Break over, back to work!')
           resetTimer()
         }
       }
@@ -162,6 +169,18 @@ const playClick = () => {
 
   oscillator.start(audioContext.currentTime)
   oscillator.stop(audioContext.currentTime + 0.1)
+}
+
+onMounted(() => {
+  if ('Notification' in window) {
+    Notification.requestPermission()
+  }
+})
+
+const showNotification = (message) => {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('Smart Pomo', { body: message })
+  }
 }
 
 const playAlarm = () => {
