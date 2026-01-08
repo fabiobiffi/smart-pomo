@@ -1,9 +1,9 @@
 <template>
    <div class="min-h-screen text-white flex flex-col">
-      <div class="flex flex-col items-center min-h-screen" style="background-image: url(/wallpaper.png); background-repeat: no-repeat; background-size: cover;">
-       <Timer />
-       <TodoList class="mt-8 w-full max-w-md" />
-     </div>
+       <div class="flex flex-col items-center min-h-screen" style="background-image: url(/wallpaper.png); background-repeat: no-repeat; background-size: cover;">
+        <Timer />
+        <TodoList class="mt-8 w-full max-w-md" />
+      </div>
      <section class="mt-12 flex-1 flex flex-col justify-center items-center">
        <div class="w-full max-w-4xl text-center">
          <h2 class="text-base font-bold mb-6">Boost Your Productivity with Smart Pomo</h2>

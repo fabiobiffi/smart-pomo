@@ -1,37 +1,38 @@
 <template>
-  <div>
+  <div class="px-10">
     <h2 class="text-xl font-bold mb-4 glow">Todo List</h2>
     <div class="space-y-2">
-      <div v-for="(todo, index) in todos" :key="index" class="flex items-center space-x-2 p-2 bg-gray-800 rounded-lg shadow-lg">
-        <input
-          type="checkbox"
-          :checked="todo.completed"
-          @change="toggleComplete(index)"
-          class="w-5 h-5"
-        />
-        <input
-          v-model="todo.text"
-          @blur="updateTodo(index)"
-          @keyup.enter="updateTodo(index)"
-          :class="['flex-1 bg-transparent border-none outline-none text-white', todo.completed ? 'line-through text-gray-500' : '']"
-          :disabled="todo.completed"
-        />
-        <button
-          @click="deleteTodo(index)"
-          class="text-red-400 hover:text-red-300 transition-colors"
-        >
-          ✕
-        </button>
-      </div>
+       <div v-for="(todo, index) in todos" :key="index" class="relative flex items-center space-x-2 p-4 bg-white bg-opacity-50 rounded-lg shadow-lg">
+         <input
+           type="checkbox"
+           :checked="todo.completed"
+           @change="toggleComplete(index)"
+           class="w-5 h-5 accent-blue-500"
+         />
+         <textarea
+           v-model="todo.text"
+           @blur="updateTodo(index)"
+           :class="['flex-1 bg-transparent border-none outline-none text-black text-lg resize-none overflow-hidden', todo.completed ? 'line-through text-gray-600' : '']"
+           :disabled="todo.completed"
+           rows="1"
+         ></textarea>
+         <button
+           @click="deleteTodo(index)"
+           class="absolute right-2 top-1/2 -translate-y-1/2 text-red-500 hover:text-red-600 transition-colors"
+         >
+           ✕
+         </button>
+       </div>
     </div>
-    <div class="mt-4">
-      <input
-        v-model="newTodo"
-        @keyup.enter="addTodo"
-        placeholder="Add new todo..."
-        class="w-full p-2 bg-gray-800 rounded-lg shadow-lg border-none outline-none text-white placeholder-gray-400"
-      />
-    </div>
+     <div class="mt-4">
+       <textarea
+         v-model="newTodo"
+         @keyup.enter="addTodo"
+         placeholder="Add new todo..."
+         class="w-full p-2 bg-gray-800 rounded-lg shadow-lg border-none outline-none text-white text-lg placeholder-gray-400 resize-none overflow-hidden"
+         rows="1"
+       ></textarea>
+     </div>
   </div>
 </template>
 
@@ -41,6 +42,8 @@ import { ref } from 'vue'
 const todos = ref([])
 
 const newTodo = ref('')
+
+
 
 const addTodo = () => {
   if (newTodo.value.trim()) {
@@ -63,3 +66,71 @@ const toggleComplete = (index) => {
   todos.value[index].completed = !todos.value[index].completed
 }
 </script>
+
+<style scoped>
+/* Gradienti notturni viola/blu */
+
+/* 1. Cielo notturno */
+.gradient-sky {
+  background: linear-gradient(
+    to bottom,
+    #351f5b,
+    #27164d,
+    #00082a
+  );
+}
+
+/* 2. Tramonto pixel-art */
+.gradient-sunset {
+  background: linear-gradient(
+    135deg,
+    #270764,
+    #351f5b,
+    #25164b
+  );
+}
+
+/* 3. Mare notturno */
+.gradient-sea {
+  background: linear-gradient(
+    to bottom,
+    #000b3b,
+    #000934,
+    #00082e
+  );
+}
+
+/* 4. Notte profonda (radiale) */
+.gradient-deep-night {
+  background: radial-gradient(
+    circle at top,
+    #351f5b,
+    #27164d,
+    #00082a
+  );
+}
+
+/* 5. Luce lontana (accent) */
+.gradient-accent {
+  background: linear-gradient(
+    to right,
+    #270764,
+    #351f5b
+  );
+}
+
+/* 6. Acqua + cielo */
+.gradient-water-sky {
+  background: linear-gradient(
+    to right,
+    #00082a,
+    #25164b,
+    #351f5b
+  );
+}
+
+/* Testo consigliato */
+.text-on-dark {
+  color: #f1edff;
+}
+</style>

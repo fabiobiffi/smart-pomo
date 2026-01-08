@@ -1,56 +1,72 @@
  <template>
    <div class="text-center mt-[50px]">
-     <div class="relative inline-block">
-        <svg width="100%" height="100%" viewBox="0 0 160 160" class="timer-circle w-full md:w-[500px] md:h-[500px] aspect-square mx-auto mt-[50px]">
-        <circle
-          cx="80"
-          cy="80"
-          r="70"
-          fill="none"
-          stroke="#e5e7eb"
-          stroke-width="8"
-        />
-        <circle
-          cx="80"
-          cy="80"
-          r="70"
-          fill="none"
-          :stroke="borderColor"
-          stroke-width="8"
-          :stroke-dasharray="`${progress * circumference} ${circumference}`"
-          stroke-linecap="round"
-          transform="rotate(-90 80 80)"
-          class="timer-border"
-        />
+      <div class="relative inline-block">
+        <svg width="100%" height="100%" viewBox="0 0 160 160" class="timer-circle w-full md:w-[500px] md:h-[500px] aspect-square mx-auto">
+         <defs>
+           <filter id="glow">
+             <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+             <feMerge>
+               <feMergeNode in="coloredBlur"/>
+               <feMergeNode in="SourceGraphic"/>
+             </feMerge>
+           </filter>
+         </defs>
+         <circle
+           cx="80"
+           cy="80"
+           r="70"
+           fill="none"
+           stroke="#e5e7eb"
+           stroke-width="4"
+         />
+         <circle
+           cx="80"
+           cy="80"
+           r="70"
+           fill="none"
+           :stroke="borderColor"
+           stroke-width="4"
+           :stroke-dasharray="`${progress * circumference} ${circumference}`"
+           stroke-linecap="round"
+           transform="rotate(-90 80 80)"
+           filter="url(#glow)"
+           class="timer-border"
+         />
       </svg>
        <div class="absolute inset-0 flex items-center justify-center">
-         <div class="text-[4rem] sm:text-8xl md:text-9xl font-mono select-none">
-           {{ formattedTime }}
-         </div>
+          <div :class="['text-[4rem] sm:text-8xl md:text-9xl font-mono select-none']" :style="{ color: borderColor, textShadow: '0 0 20px ' + borderColor }">
+            {{ formattedTime }}
+          </div>
        </div>
+        <div v-if="!isRunning" class="absolute inset-0 flex items-center justify-center" style="margin-top: 140px;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" class="text-yellow-400" filter="url(#glow)">
+            <rect x="6" y="4" width="4" height="16"></rect>
+            <rect x="14" y="4" width="4" height="16"></rect>
+          </svg>
+        </div>
     </div>
-    <div class="mt-4 flex justify-center space-x-4">
-      <button
-        @click="startTimer"
-        class="px-4 py-2 bg-red-500 hover:bg-red-600 border-4 border-yellow-400 rounded-none shadow-lg transform hover:scale-105 transition-all duration-300 text-sm font-bold"
-        :disabled="isRunning"
-      >
-        START
-      </button>
-      <button
-        @click="pauseTimer"
-        class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 border-4 border-orange-400 rounded-none shadow-lg transform hover:scale-105 transition-all duration-300 text-sm font-bold"
-        :disabled="!isRunning"
-      >
-        PAUSE
-      </button>
-      <button
-        @click="resetTimer"
-        class="px-4 py-2 bg-blue-500 hover:bg-blue-600 border-4 border-cyan-400 rounded-none shadow-lg transform hover:scale-105 transition-all duration-300 text-sm font-bold"
-      >
-        RESET
-      </button>
-    </div>
+     <div class="mt-4 flex justify-center space-x-4">
+       <button
+         @click="startTimer"
+         class="px-4 py-2 bg-red-500 hover:bg-red-600 border-4 border-yellow-400 rounded-none shadow-lg transform hover:scale-105 transition-all duration-300 text-sm font-bold"
+         :disabled="isRunning"
+       >
+         START
+       </button>
+       <button
+         @click="pauseTimer"
+         class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 border-4 border-orange-400 rounded-none shadow-lg transform hover:scale-105 transition-all duration-300 text-sm font-bold"
+         :disabled="!isRunning"
+       >
+         PAUSE
+       </button>
+       <button
+         @click="resetTimer"
+         class="px-4 py-2 bg-blue-500 hover:bg-blue-600 border-4 border-cyan-400 rounded-none shadow-lg transform hover:scale-105 transition-all duration-300 text-sm font-bold"
+       >
+         RESET
+       </button>
+     </div>
   </div>
 </template>
 
@@ -73,6 +89,7 @@ const progress = computed(() => remainingTime.value / totalTime.value)
 const circumference = 2 * Math.PI * 70
 
 const borderColor = computed(() => {
+  if (!isRunning.value) return '#f59e0b' // yellow when paused
   if (progress.value > 0.5) return '#10b981' // green
   if (progress.value > 0.2) return '#f59e0b' // yellow
   return '#ef4444' // red
@@ -150,5 +167,42 @@ const playAlarm = () => {
 
 .timer-border {
   transition: stroke 0.3s ease, filter 0.3s ease;
+}
+
+/* Gradienti notturni viola/blu */
+
+/* 1. Cielo notturno */
+.gradient-sky {
+  background: linear-gradient(
+    to bottom,
+    #351f5b,
+    #27164d,
+    #00082a
+  );
+}
+
+/* 2. Tramonto pixel-art */
+.gradient-sunset {
+  background: linear-gradient(
+    135deg,
+    #270764,
+    #351f5b,
+    #25164b
+  );
+}
+
+/* 3. Mare notturno */
+.gradient-sea {
+  background: linear-gradient(
+    to bottom,
+    #000b3b,
+    #000934,
+    #00082e
+  );
+}
+
+/* Testo consigliato */
+.text-on-dark {
+  color: #f1edff;
 }
 </style>
