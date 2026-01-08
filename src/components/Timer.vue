@@ -81,10 +81,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 
-const workMinutes = ref(25)
-const breakMinutes = ref(5)
+const workMinutes = ref(parseInt(localStorage.getItem('workMinutes') || '25'))
+const breakMinutes = ref(parseInt(localStorage.getItem('breakMinutes') || '5'))
 const totalTime = ref(workMinutes.value * 60) // in seconds
 const remainingTime = ref(totalTime.value)
 const isRunning = ref(false)
@@ -181,8 +181,9 @@ const playAlarm = () => {
   oscillator.stop(audioContext.currentTime + 1)
 }
 
-// Watchers to update times when inputs change
+// Watchers to update times when inputs change and save to localStorage
 watch(workMinutes, (newVal) => {
+  localStorage.setItem('workMinutes', newVal.toString())
   if (!isRunning.value && !isBreak.value) {
     totalTime.value = newVal * 60
     remainingTime.value = totalTime.value
@@ -190,6 +191,7 @@ watch(workMinutes, (newVal) => {
 })
 
 watch(breakMinutes, (newVal) => {
+  localStorage.setItem('breakMinutes', newVal.toString())
   if (isBreak.value && !isRunning.value) {
     totalTime.value = newVal * 60
     remainingTime.value = totalTime.value

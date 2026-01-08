@@ -37,9 +37,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
-const todos = ref([])
+const todos = ref(JSON.parse(localStorage.getItem('todos') || '[]'))
 
 const newTodo = ref('')
 
@@ -65,6 +65,11 @@ const deleteTodo = (index) => {
 const toggleComplete = (index) => {
   todos.value[index].completed = !todos.value[index].completed
 }
+
+// Watch todos to save to localStorage
+watch(todos, (newTodos) => {
+  localStorage.setItem('todos', JSON.stringify(newTodos))
+}, { deep: true })
 </script>
 
 <style scoped>
