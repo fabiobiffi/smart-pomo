@@ -21,9 +21,9 @@ export default [
     languageOptions: {
       parserOptions: {
         parser: '@babel/eslint-parser',
-            requireConfigFile: false,
-          },
-        },
+        requireConfigFile: false,
       },
-    ],
+    },
+  },
+]
 }

@@ -83,13 +83,22 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 
+// Store the original document title to restore later
+const originalTitle = ref(document.title)
+
+// Timer state management
 const workMinutes = ref(parseInt(localStorage.getItem('workMinutes') || '25'))
 const breakMinutes = ref(parseInt(localStorage.getItem('breakMinutes') || '5'))
 const totalTime = ref(workMinutes.value * 60) // in seconds
 const remainingTime = ref(totalTime.value)
 const isRunning = ref(false)
 const isBreak = ref(false)
+
+// Enhanced timing system to prevent Chrome throttling
 const intervalId = ref(null)
+const startTime = ref(0) // Store when timer started using performance.now()
+const pausedTime = ref(0) // Store how much time was already counted when paused
+const audioContext = ref(null) // Keep audio context active to prevent aggressive throttling
 
 const formattedTime = computed(() => {
   const minutes = Math.floor(remainingTime.value / 60)
@@ -112,45 +121,104 @@ const borderColor = computed(() => {
 const startTimer = () => {
   if (!isRunning.value) {
     isRunning.value = true
+    // Record the start time using high-precision timer
+    startTime.value = performance.now()
+
+    // Resume audio context if available (helps prevent Chrome throttling)
+    if (audioContext.value && audioContext.value.state === 'suspended') {
+      audioContext.value.resume()
+    }
+
     if (!isBreak.value) {
       showNotification('Work time started!')
     } else {
       showNotification('Break time started!')
     }
-    intervalId.value = setInterval(() => {
-      if (remainingTime.value > 0) {
-        remainingTime.value--
-      } else {
-        playAlarm()
-        if (!isBreak.value) {
-          // Start break
-          showNotification('Time for a break!')
-          isBreak.value = true
-          remainingTime.value = breakMinutes.value * 60
-          totalTime.value = breakMinutes.value * 60
+
+    // Use setTimeout with shorter intervals for more reliable timing
+    // This helps prevent Chrome throttling issues
+    const updateTimer = () => {
+      if (isRunning.value) {
+        // Calculate actual elapsed time since start
+        const currentTime = performance.now()
+        const elapsedMs = currentTime - startTime.value
+        const elapsedSeconds = Math.floor(elapsedMs / 1000)
+
+        // Calculate remaining time based on total time minus elapsed time
+        const newRemainingTime = Math.max(0, totalTime.value - elapsedSeconds - pausedTime.value)
+
+        remainingTime.value = newRemainingTime
+
+        if (remainingTime.value > 0) {
+          // Continue with shorter timeout for better accuracy
+          intervalId.value = setTimeout(updateTimer, 100) // Update every 100ms
         } else {
-          // End break, reset to work
-          showNotification('Break over, back to work!')
-          resetTimer()
+          // Timer completed
+          playAlarm()
+          if (!isBreak.value) {
+            // Start break
+            showNotification('Time for a break!')
+            isBreak.value = true
+            remainingTime.value = breakMinutes.value * 60
+            totalTime.value = breakMinutes.value * 60
+            pausedTime.value = 0
+            startTime.value = performance.now()
+            intervalId.value = setTimeout(updateTimer, 100)
+          } else {
+            // End break, reset to work
+            showNotification('Break over, back to work!')
+            resetTimer()
+          }
         }
       }
-    }, 1000)
+    }
+
+    // Start the timer loop
+    intervalId.value = setTimeout(updateTimer, 100)
   }
 }
 
 const pauseTimer = () => {
   if (isRunning.value) {
-    clearInterval(intervalId.value)
+    // Cancel the timeout
+    if (intervalId.value) {
+      clearTimeout(intervalId.value)
+      intervalId.value = null
+    }
+
+    // Calculate how much time has elapsed and store it
+    const currentTime = performance.now()
+    const elapsedMs = currentTime - startTime.value
+    const elapsedSeconds = Math.floor(elapsedMs / 1000)
+    pausedTime.value += elapsedSeconds
+
+    // Suspend audio context when paused (to save resources)
+    if (audioContext.value && audioContext.value.state === 'running') {
+      audioContext.value.suspend()
+    }
+
     isRunning.value = false
   }
 }
 
 const resetTimer = () => {
-  clearInterval(intervalId.value)
+  // Cancel any running timeout
+  if (intervalId.value) {
+    clearTimeout(intervalId.value)
+    intervalId.value = null
+  }
+
+  // Suspend audio context when reset
+  if (audioContext.value && audioContext.value.state === 'running') {
+    audioContext.value.suspend()
+  }
+
   isRunning.value = false
   isBreak.value = false
   totalTime.value = workMinutes.value * 60 // reset to work time
   remainingTime.value = totalTime.value
+  startTime.value = 0
+  pausedTime.value = 0
 }
 
 const playClick = () => {
@@ -175,6 +243,39 @@ onMounted(() => {
   if ('Notification' in window) {
     Notification.requestPermission()
   }
+
+  // Initialize audio context to help prevent Chrome throttling
+  try {
+    audioContext.value = new (window.AudioContext || window.webkitAudioContext)()
+  } catch (e) {
+    // Audio context not available, continue without it
+  }
+
+  // Handle page visibility changes to maintain accurate timing
+  const handleVisibilityChange = () => {
+    if (document.hidden) {
+      // Tab became hidden - let the timer continue running in background
+      // Chrome may throttle, but our timing system will handle it
+      return
+    }
+
+    // Tab became visible again - check if timing needs correction
+    if (isRunning.value) {
+      const currentTime = performance.now()
+      const elapsedMs = currentTime - startTime.value
+      const elapsedSeconds = Math.floor(elapsedMs / 1000)
+      const expectedRemaining = totalTime.value - elapsedSeconds - pausedTime.value
+
+      // If there's a significant discrepancy (more than 2 seconds), correct it
+      // This handles Chrome's background throttling
+      if (Math.abs(expectedRemaining - remainingTime.value) > 2) {
+        remainingTime.value = Math.max(0, expectedRemaining)
+      }
+    }
+  }
+
+  // Listen for visibility changes
+  document.addEventListener('visibilitychange', handleVisibilityChange)
 })
 
 const showNotification = (message) => {
@@ -199,6 +300,18 @@ const playAlarm = () => {
   oscillator.start(audioContext.currentTime)
   oscillator.stop(audioContext.currentTime + 1)
 }
+
+// Watchers to update browser tab title with timer status
+watch([isRunning, remainingTime, isBreak], () => {
+  if (isRunning.value) {
+    // Update tab title with current timer value and context
+    const timerType = isBreak.value ? 'Break' : 'Work'
+    document.title = `${formattedTime.value} - ${timerType} | Smart Pomo`
+  } else {
+    // Restore original title when timer is not running
+    document.title = originalTitle.value
+  }
+})
 
 // Watchers to update times when inputs change and save to localStorage
 watch(workMinutes, (newVal) => {
